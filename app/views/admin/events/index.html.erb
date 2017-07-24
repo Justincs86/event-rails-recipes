@@ -1,20 +1,81 @@
-<h1>Admin Event List</h1>
+<h1> <%= t("admin.event_list") %></h1>
 
 <p class="text-right">
 <%= link_to "New Event", new_admin_event_path, :class => "btn btn-primary" %>
 </p>
 
+<%= form_tag bulk_update_admin_events_path, :class => "form-inline" do %>
+
 <table class="table">
+<thead>
 <tr>
+  <th><%= check_box_tag "全选", "1", false, :id => "toggle_all" %></th>
   <th>Event Name</th>
   <th>Actions</th>
 </tr>
+</thead>
+
+<tbody class="sortable">
 <% @events.each do |event| %>
-  <tr>
-    <td><%= link_to event.name, admin_event_path(event) %></td>
+  <tr data-reorder-url="<%= reorder_admin_event_path(event) %> ">
     <td>
+       <%= check_box_tag "ids[]", event.id %>
+    </td>
+    <td>
+      <span class="sortable_icon">=</span>
+      <%= link_to event.name, admin_event_path(event) %>
+    </td>
+    <td>
+      <%= link_to "Move top", reorder_admin_event_path(event, :position => :top), method: :post, :class => "btn btn-default" %>
+      <%= link_to "Move bottom", reorder_admin_event_path(event, :position => :top), method: :post, :class => "btn btn-default" %>
+
+      <%= link_to "Tickets", admin_event_tickets_path(event), :class => "btn btn-default" %>
       <%= link_to "Edit", edit_admin_event_path(event), :class => "btn btn-default" %>
       <%= link_to "Delete", admin_event_path(event), :method => "delete", :data => { :confirm => "Are you sure?" }, :class => "btn btn-danger" %>
   </tr>
 <% end %>
+</tbody>
 </table>
+
+   <p>
+     <%= select_tag :event_status, options_for_select( Event::STATUS.map{ |s| [t(s, :scope =>  "event.status"), s] }), :class => "form-control" %>
+
+     <%= submit_tag t(:bulk_update), :class => "btn btn-primary" %>
+     <%= submit_tag t(:bulk_delete), :class => "btn btn-danger", :data => { :confirm => "Are you  sure ?" } %>
+
+   </p>
+<% end %>
+
+<script>
+   // this javascript will tie on event #toggle_all check_box for choosing all effect
+   $("#toggle_all").click(function(){
+     if ( $(this).prop("checked") ) {
+       $("input[name='ids[]']").prop("checked", true);
+     } else {
+       $("input[name='ids[]']").prop("checked", false);
+     }
+   })
+
+
+
+    $( ".sortable" ).sortable ({
+      axis: 'y',        // limit for move up and down
+      items: 'tr',      // drag whole tr
+      cursor: 'move',    // change dragging icon while dragging
+      handle: ".sortable_icon",  // limit only click icon = then start dragging, remove this whole tr can be dragged
+      stop: function(e, ui){     // function this when dragging finish
+        ui.item.children('td').effect('highlight', {}, 1000)
+      },
+      update: function(e,ui) {    // when dragging finish and DOM position changed, function this
+        reorder_url = ui.item.data('reorder-url')
+        position = ui.item.index()   // positioning
+        $.ajax({
+          type: 'POST',
+          url: reorder_url,
+          dataType: 'json',
+          data: { position: position }
+        })
+      }
+    });
+
+</script>
