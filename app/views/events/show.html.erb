@@ -6,4 +6,6 @@
 
 <%= sanitize @event.description %>
 
+<% if @event.tickets.present? %>
 <p> <%= link_to "Register", new_event_registration_path(@event), :class => "btn btn-primary" %> </p>
+<% end %>
