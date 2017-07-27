@@ -10,6 +10,8 @@ class Registration < ApplicationRecord
 
   validates_presence_of :name, :email
 
+  scope :by_status, ->(s){ where( :status => s ) }
+  scope :by_ticket, ->(t){ where( :ticket_id => t) }
 
   attr_accessor :current_step
   validates_presence_of :name, :email, :cellphone, :if => :should_validate_basic_data?
