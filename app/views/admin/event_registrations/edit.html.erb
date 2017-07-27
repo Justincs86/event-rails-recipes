@@ -1,0 +1,10 @@
+<h1> Edit Registration </h1>
+
+  <% form_for [:admin, @event, @registration] do |f|
+
+   <%= render :partial => "form", :locals => { :f => f }
+
+   <%= f.submit "Update", :class => "btn btn-default" %>
+
+  <% end %>
+  

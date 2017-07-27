@@ -8,6 +8,8 @@ class Registration < ApplicationRecord
   belongs_to :ticket
   belongs_to :user, :optional => true
 
+  validates_presence_of :name, :email
+
 
   attr_accessor :current_step
   validates_presence_of :name, :email, :cellphone, :if => :should_validate_basic_data?
@@ -21,9 +23,9 @@ class Registration < ApplicationRecord
     self.uuid
   end
 
-  STATUS = ["Registered", "Unregister"]
-  validates_inclusion_of :status, :in => STATUS
-  
+  # STATUS = ["Registered", "Unregister"]
+  # validates_inclusion_of :status, :in => STATUS
+
   protected
 
   def should_validate_basic_data?
@@ -39,10 +41,10 @@ class Registration < ApplicationRecord
   end
 
   def check_event_status
-    if self.event.status == "draft"
-      errors.add(:base, "活动尚未开始报名")
+      if self.event.status == "draft"
+        errors.add(:base, "活动尚未开放报名")
+      end
     end
-  end
 
 
 end

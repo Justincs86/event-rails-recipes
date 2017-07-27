@@ -12,7 +12,7 @@
 
 <div class="form-group">
   <%= f.label :ticket_id %>
-  <%= f.select :ticket_id, Ticket.all.map { |t| [t.name, t.id] }, {}, :class => "form-control" %>
+  <%= f.select :ticket_id, @event.tickets.all.map { |t| [t.name, t.id] }, {}, :class => "form-control" %>
 </div>
 
 <div class="form-group">
