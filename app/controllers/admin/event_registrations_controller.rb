@@ -4,14 +4,22 @@ class Admin::EventRegistrationsController < AdminController
   def index
     @registrations = @event.registrations.includes(:ticket).order("id DESC").page(params[:page]).per(10)
 
+    if Array(params[:statuses]).any?
+      @registrations = @registrations.by_status(params[:statuses])
+    end
+
+    if Array(params[:ticket_ids]).any?
+      @registrations = @registrations.by_ticket(params[:ticket_ids])
+    end
+
     if params[:status].present? && Registration::STATUS.include?(params[:status])
       @registrations = @registrations.by_status(params[:status])
     end
 
     if params[:ticket_id].present?
-      @registrations = @registions.by_ticket(params[:ticket_id])
+      @registrations = @registrations.by_ticket(params[:ticket_id])
     end
-    
+
   end
 
   def new
@@ -37,7 +45,7 @@ class Admin::EventRegistrationsController < AdminController
     @registration.ticket_id = params[:registration][:ticked_id]
 
     if @registration.update(registration_params)
-      redirect_to admin_event_registration_path(@event)
+      redirect_to admin_event_registrations_path(@event)
     else
       render "edit"
     end
@@ -61,7 +69,7 @@ class Admin::EventRegistrationsController < AdminController
   end
 
   def registration_params
-    params.require(:registration).permit(:status, :ticket, :name, :email, :cellphone, :website, :bio)
+    params.require(:registration).permit(:status, :ticket_id, :name, :email, :cellphone, :website, :bio)
   end
 
 
