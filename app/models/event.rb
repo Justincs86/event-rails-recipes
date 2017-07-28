@@ -15,6 +15,11 @@ class Event < ApplicationRecord
  has_many :registrations, :dependent => :destroy
  accepts_nested_attributes_for :registrations, :allow_destroy => true, :reject_if => :all_blank
 
+ scope :only_public, -> { where( :status => "public") }
+ scope :only_available, -> { where( :status => ["public", "private"] ) }
+
+ mount_uploader :logo, EventLogoUploader
+
  include RankedModel
  ranks :row_order
 
