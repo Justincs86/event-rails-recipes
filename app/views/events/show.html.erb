@@ -9,6 +9,12 @@
 
 <h2> <%= @event.category.try(:name) %> </h2>
 
+  <% if @event.images.present? %>
+    <% @event.images.each do |i| %>
+      <%= link_to image_tag(i.url(:small)), i.url %>
+    <% end %>
+  <% end %>
+
 <%= sanitize @event.description %>
 
 <% if @event.tickets.present? %>
