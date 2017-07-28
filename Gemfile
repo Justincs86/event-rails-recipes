@@ -51,6 +51,7 @@ gem 'kaminari'
 gem 'ransack'
 gem 'carrierwave'
 gem 'mini_magick'
+gem 'chart-js-rails'
 
 group :development, :test do
   gem 'rspec-rails'

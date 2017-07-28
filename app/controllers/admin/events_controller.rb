@@ -6,11 +6,42 @@ class Admin::EventsController < AdminController
 
   def show
     @event = Event.find_by_friendly_id!(params[:id])
+
+    colors = ['rgba(255, 99, 132, 0.2)',
+              'rgba(52,162,235,0.2)',
+              'rgba(255,206,86,0.2)',
+              'rgba(75,192,192,0.2)',
+              'rgba(153, 102,255,0.2)',
+              'rgba(255,159,64,0.2)'
+              ]
+    ticket_names = @event.tickets.map { |t| t.name }
+
+    @data1 = {
+      labels: ticket_names,
+      datasets: [{
+        label: "# of Registrations",
+        data: @event.tickets.map{ |t| t.registrations.count },
+        backgroundColor: colors,
+        borderWidth: 1
+        }]
+    }
+
+    @data2 = {
+      labels: ticket_names,
+      datasets: [{
+        label: '# of Amount',
+        data: @event.tickets.map{ |t| t.registrations.by_status("confirmed").count * t.price },
+        backgroundColor: colors,
+        borderwidth: 1
+        }]
+    }
+    
   end
 
   def new
     @event = Event.new
     @event.tickets.build
+    @event.attachments.build
   end
 
   def create
@@ -26,6 +57,7 @@ class Admin::EventsController < AdminController
   def edit
     @event = Event.find_by_friendly_id!(params[:id])
     @event.tickets.build if @event.tickets.empty?
+    @event.attachments.build if @event.attachments.empty?
   end
 
   def update
@@ -81,7 +113,7 @@ class Admin::EventsController < AdminController
   protected
 
   def event_params
-    params.require(:event).permit(:name, :logo, :remove_logo, :remove_images, :description, :friendly_id, :status, :category_id, :images => [], :tickets_attributes => [:id, :name, :description, :price, :_destroy])
+    params.require(:event).permit(:name, :logo, :remove_logo, :remove_images, :description, :friendly_id, :status, :category_id, :images => [], :tickets_attributes => [:id, :name, :description, :price, :_destroy], :attachments_attributes => [:id, :attachment, :description, :_destroy])
   end
 
 end
