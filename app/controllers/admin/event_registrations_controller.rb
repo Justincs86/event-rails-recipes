@@ -1,5 +1,6 @@
 require 'csv'
 class Admin::EventRegistrationsController < AdminController
+  before_action :require_editor!
 
   before_action :find_event
 
@@ -50,7 +51,7 @@ class Admin::EventRegistrationsController < AdminController
       }
 
       format.xlsx
-      
+
     end
 
   end
@@ -104,6 +105,16 @@ class Admin::EventRegistrationsController < AdminController
   def registration_params
     params.require(:registration).permit(:status, :ticket_id, :name, :email, :cellphone, :website, :bio)
   end
+
+  def require_editor!
+    if current_user.role != "editor" && current_user.role != "admin"
+      flash[:alert] = "You are not editor & admin!"
+      redirect_to root_path
+    end
+  end
+
+
+
 
 
 end

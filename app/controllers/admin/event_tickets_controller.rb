@@ -1,4 +1,5 @@
   class Admin::EventTicketsController < AdminController
+   before_action :require_editor!
 
    before_action :find_event
 
@@ -48,6 +49,13 @@
 
    def ticket_params
      params.require(:ticket).permit(:name, :price, :description)
+   end
+
+   def require_editor!
+     if current_user.role != "admin" && current_user.role != "admin"
+       flash[:alert] = "You are not editor & admin!"
+       redirect_to root_path
+     end
    end
 
   end

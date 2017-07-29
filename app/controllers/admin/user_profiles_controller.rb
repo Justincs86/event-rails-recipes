@@ -1,4 +1,5 @@
 class Admin::UserProfilesController < AdminController
+  before_action :require_admin!
 
   before_action :find_user_and_profile
 
@@ -24,5 +25,13 @@ class Admin::UserProfilesController < AdminController
   def profile_params
     params.require(:profile).permit(:legal_name, :birthday, :location, :education, :occupation, :bio, :specialty)
   end
+
+  def require_admin!
+    if current_user.role != "admin"
+      flash[:alert] = "You are not admin!"
+      redirect_to root_path
+    end
+  end
+  
 
 end

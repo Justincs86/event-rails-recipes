@@ -1,4 +1,5 @@
 class Admin::EventsController < AdminController
+  before_action :require_editor!
 
   def index
     @events = Event.rank(:row_order).all
@@ -138,5 +139,13 @@ class Admin::EventsController < AdminController
   def event_params
     params.require(:event).permit(:name, :logo, :remove_logo, :remove_images, :description, :friendly_id, :status, :category_id, :images => [], :tickets_attributes => [:id, :name, :description, :price, :_destroy], :attachments_attributes => [:id, :attachment, :description, :_destroy])
   end
+
+  def require_editor!
+    if current_user.role != "editor" && current_user.role != "admin"
+      flash[:alert] = "You are not editor & admin"
+      redirect_to root_path
+    end
+  end
+  
 
 end
