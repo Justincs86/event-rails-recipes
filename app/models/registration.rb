@@ -8,8 +8,6 @@ class Registration < ApplicationRecord
   belongs_to :ticket
   belongs_to :user, :optional => true
 
-  validates_presence_of :name, :email
-
   scope :by_status, ->(s){ where( :status => s ) }
   scope :by_ticket, ->(t){ where( :ticket_id => t) }
 
@@ -21,12 +19,11 @@ class Registration < ApplicationRecord
 
   before_validation :generate_uuid, :on => :create
 
+  has_paper_trail
+
   def to_param
     self.uuid
   end
-
-  # STATUS = ["Registered", "Unregister"]
-  # validates_inclusion_of :status, :in => STATUS
 
   protected
 

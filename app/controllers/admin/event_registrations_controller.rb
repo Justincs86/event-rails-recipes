@@ -1,4 +1,6 @@
+require 'csv'
 class Admin::EventRegistrationsController < AdminController
+
   before_action :find_event
 
   def index
@@ -32,6 +34,23 @@ class Admin::EventRegistrationsController < AdminController
 
     if params[:ticket_id].present?
       @registrations = @registrations.by_ticket(params[:ticket_id])
+    end
+
+    respond_to do |format|
+      format.html
+      format.csv {
+        @registrations = @registrations.reorder("id ASC")
+        csv_string = CSV.generate do |csv|
+          csv << ["报名ID", "票种", "姓名", "状态", "Email", "报名时间"]
+          @registrations.each do |r|
+            csv << [r.id, r.ticket.name, r.name, t(r.status, :scope => "registration.status"), r.email, r.created_at]
+          end
+        end
+        send_data csv_string, :filename => "#{@event.friendly_id}-registrations-#{Time.now.to_s(:number)}.csv"
+      }
+
+      format.xlsx
+      
     end
 
   end
