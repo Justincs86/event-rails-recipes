@@ -18,4 +18,13 @@ class User < ApplicationRecord
 
   ROLES = ["admin", 'editor']
 
+  def is_admin?
+    self.role == "admin"
+  end
+
+  def is_editor?
+    ["admin", "editor"].include?(self.role)         # admin have editor role power
+  end
+
+
 end
